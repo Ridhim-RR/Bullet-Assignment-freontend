@@ -46,7 +46,7 @@ const signupApi = async ({ username, email, password }) => {
   return data;
 };
 
-function AuthForm() {
+function AuthForm({ login }) {
   const [type, setType] = useState("login"); // <-- Internal type state
   const [fields, setFields] = useState({
     username: "",
@@ -57,12 +57,18 @@ function AuthForm() {
 
   const loginMutation = useMutation(loginApi, {
     onSuccess: (data) => {
-      if (data.token) navigate("/list");
+      if (data.token) {
+        login(data.token);
+        navigate("/list");
+      }
     },
   });
   const signupMutation = useMutation(signupApi, {
     onSuccess: (data) => {
-      if (data.token) navigate("/list");
+      if (data.token) {
+        login(data.token);
+        navigate("/list");
+      }
     },
   });
 
