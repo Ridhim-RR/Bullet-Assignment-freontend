@@ -93,92 +93,117 @@ function AuthForm({ login }) {
   };
 
   return (
-    <Paper
-      elevation={6}
-      sx={{ width: 380, mx: "auto", p: 4, mt: 10, bgcolor: "#23293A" }}
-    >
-      <Stack alignItems="center" spacing={2}>
-        <LockIcon
-          fontSize="large"
-          color="primary"
-          sx={{ bgcolor: "#23293A", color: "#FFD700" }}
-        />
-        <Typography variant="h5" fontWeight={600} color="white">
-          {type === "login" ? "Login" : "Sign Up"}
-        </Typography>
-      </Stack>
-      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-        {type === "signup" && (
-          <TextField
-            fullWidth
-            label="Username"
-            name="username"
-            value={fields.username}
-            onChange={handleChange}
-            required
-            sx={{
-              mb: 2,
-              input: { color: "white" },
-              label: { color: "#bdbdbd" },
-            }}
-          />
-        )}
-        <TextField
-          fullWidth
-          label="Email"
-          name="email"
-          type="email"
-          value={fields.email}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2, input: { color: "white" }, label: { color: "#bdbdbd" } }}
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          value={fields.password}
-          onChange={handleChange}
-          required
-          sx={{ mb: 2, input: { color: "white" }, label: { color: "#bdbdbd" } }}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          fullWidth
-          sx={{
-            py: 1.5,
-            fontWeight: 700,
-            bgcolor: "#FFD700",
-            color: "#23293A",
-            mt: 2,
-          }}
-          disabled={loginMutation.isLoading || signupMutation.isLoading}
+    <>
+      <Box
+        sx={{
+          minHeight: "100vh",
+          background: "#a1a1a1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Paper
+          elevation={6}
+          sx={{ width: 380, mx: "auto", p: 4, bgcolor: "#23293A" }}
         >
-          {type === "login" ? "Sign In" : "Sign Up"}
-        </Button>
-        <Box mt={3} textAlign="center">
-          <Link
-            component="button"
-            type="button"
-            variant="body2"
-            color="inherit"
-            onClick={handleSwitch}
-            sx={{ color: "#FFD700" }}
+          <Stack alignItems="center" spacing={2}>
+            <LockIcon
+              fontSize="large"
+              color="primary"
+              sx={{ bgcolor: "#23293A", color: "#FFD700" }}
+            />
+            <Typography variant="h5" fontWeight={600} color="white">
+              {type === "login" ? "Login" : "Sign Up"}
+            </Typography>
+          </Stack>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
           >
-            {type === "login"
-              ? "Don't have an account? Sign Up"
-              : "Already have an account? Log In"}
-          </Link>
-        </Box>
-        {(loginMutation.error || signupMutation.error) && (
-          <Typography color="error" mt={2}>
-            {loginMutation.error?.message || signupMutation.error?.message}
-          </Typography>
-        )}
+            {type === "signup" && (
+              <TextField
+                fullWidth
+                label="Username"
+                name="username"
+                value={fields.username}
+                onChange={handleChange}
+                required
+                sx={{
+                  mb: 2,
+                  input: { color: "white" },
+                  label: { color: "#bdbdbd" },
+                }}
+              />
+            )}
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              value={fields.email}
+              onChange={handleChange}
+              required
+              sx={{
+                mb: 2,
+                input: { color: "white" },
+                label: { color: "#bdbdbd" },
+              }}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={fields.password}
+              onChange={handleChange}
+              required
+              sx={{
+                mb: 2,
+                input: { color: "white" },
+                label: { color: "#bdbdbd" },
+              }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                py: 1.5,
+                fontWeight: 700,
+                bgcolor: "#FFD700",
+                color: "#23293A",
+                mt: 2,
+              }}
+              disabled={loginMutation.isLoading || signupMutation.isLoading}
+            >
+              {type === "login" ? "Sign In" : "Sign Up"}
+            </Button>
+            <Box mt={3} textAlign="center">
+              <Link
+                component="button"
+                type="button"
+                variant="body2"
+                color="inherit"
+                onClick={handleSwitch}
+                sx={{ color: "#FFD700" }}
+              >
+                {type === "login"
+                  ? "Don't have an account? Sign Up"
+                  : "Already have an account? Log In"}
+              </Link>
+            </Box>
+            {(loginMutation.error || signupMutation.error) && (
+              <Typography color="error" mt={2}>
+                {loginMutation.error?.message || signupMutation.error?.message}
+              </Typography>
+            )}
+          </Box>
+        </Paper>
       </Box>
-    </Paper>
+    </>
   );
 }
 
