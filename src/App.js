@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import MovieGrid from "./MovieGrid";
 import Login from "./login";
 import Dashboard from "./Dashboard";
+import AuthForm from "./login";
 
 // Auth hook: checks for token in localStorage
 function useAuth() {
@@ -47,8 +48,8 @@ export default function App() {
     <Router>
       <Routes>
         {/* Login Page - Public */}
-        <Route path="/" element={<Login login={auth.login} />} />
-        <Route path="/login" element={<Login login={auth.login} />} />
+        <Route path="/" element={<AuthForm login={auth.login} />} />
+        <Route path="/login" element={<AuthForm login={auth.login} />} />
         {/* Private Route (auth only) */}
         <Route
           path="/dashboard"
