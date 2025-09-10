@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useQuery } from "react-query";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
@@ -8,80 +11,70 @@ import Box from "@mui/material/Box";
 import Header from "./Header";
 import FeaturedCarousel from "./FeaturedCarousel";
 import EpisodePlayerModal from "./EpisodePlayerModal";
-import { useState } from "react";
-
-// Movie sections data
-const sections = [
-  {
-    title: "Hindi",
-    movies: [
-      {
-        title: "Andhadhun",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2018,
-        rating: 8.2,
-      },
-      {
-        title: "Article 15",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2019,
-        rating: 8.0,
-      },
-      {
-        title: "Gully Boy",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2019,
-        rating: 8.0,
-      },
-    ],
-  },
-  {
-    title: "Bengali",
-    movies: [
-      {
-        title: "Drishtikone",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2018,
-        rating: 7.6,
-      },
-      {
-        title: "Bela Seshe",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2015,
-        rating: 8.1,
-      },
-      {
-        title: "Rajkahini",
-        image: "https://cdn.pixabay.com/photo/2020/04/20/18/10/cinema-5069314_1280.jpg",
-        year: 2015,
-        rating: 7.6,
-      },
-    ],
-  },
-];
-
-// Flatten all movies to build a full episode array for the player modal
-const episodeArray = sections.flatMap(section =>
-  section.movies.map(movie => ({
-    ...movie,
-    video: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4", // Replace with real episode URLs
-    description: `${movie.title} - Sample Episode Description`,
-  }))
-);
 
 export default function MultiSectionMovieGrid() {
+  const [sections, setSections] = useState([]);
+  const [episodeArray, setEpisodeArray] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedIdx, setSelectedIdx] = useState(0); // Start at index 0
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
-  // Track the running movie index as we render cards
+  // fetchMedia defined inside component to avoid hoisting/import issues
+  const fetchMedia = () => {
+    const token = localStorage.getItem("token"); // get JWT token
+    return axios
+      .get("https://bullet-assignment-backend-1.onrender.com/api/media/list", {
+        headers: {
+          "x-auth-token": token || "",
+        },
+      })
+      .then((res) => res.data);
+  };
+
+  // Using useQuery for fetching data
+  const { data, isLoading, isError, error } = useQuery("mediaList", fetchMedia);
+
+  // When data changes, update sections and episode array
+  useEffect(() => {
+    if (data) {
+      setSections(data);
+
+      // Flatten episodes for modal
+      const episodes = [];
+      data.forEach((section) => {
+        section.movies.forEach((movie) => {
+          movie.episodes.forEach((ep) => {
+            episodes.push({
+              ...ep,
+              video: ep.video, // assuming backend provides video url here
+              title: ep.title,
+              description: ep.description,
+              movieTitle: movie.title,
+            });
+          });
+        });
+      });
+      setEpisodeArray(episodes);
+    }
+  }, [data]);
+
   let movieIdx = 0;
+
+  if (isLoading)
+    return <Typography color="white" align="center" mt={4}>Loading...</Typography>;
+
+  if (isError)
+    return (
+      <Typography color="error" align="center" mt={4}>
+        {error.message}
+      </Typography>
+    );
 
   return (
     <div style={{ minHeight: "100vh", background: "#191c23" }}>
       <Header />
       <FeaturedCarousel />
-      <div style={{ padding: "24px 100px" }}>
-        {sections.map(section => (
+      <div style={{ padding: "24px 16px", maxWidth: 1400, margin: "0 auto" }}>
+        {sections.map((section) => (
           <Box key={section.title} mb={7}>
             <Typography
               variant="h4"
@@ -92,11 +85,18 @@ export default function MultiSectionMovieGrid() {
             >
               {section.title} Movies
             </Typography>
-            <Grid container spacing={4} sx={{ width: "100%", margin: 0 }}>
-              {section.movies.map(movie => {
-                const currIdx = movieIdx++; // Track absolute index for modal
+            <Grid container spacing={3} sx={{ width: "100%", margin: 0 }}>
+              {section.movies.map((movie) => {
+                const currIdx = movieIdx++;
                 return (
-                  <Grid item xs={12} sm={6} md={3} key={movie.title}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    key={movie.title + currIdx} // ensure unique key
+                  >
                     <Card
                       onClick={() => {
                         setSelectedIdx(currIdx);
@@ -113,17 +113,20 @@ export default function MultiSectionMovieGrid() {
                           transform: "translateY(-4px)",
                           boxShadow: 8,
                         },
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
                       }}
                     >
                       <CardMedia
                         component="img"
-                        height="340"
+                        height="300"
                         image={movie.image}
                         alt={movie.title}
                         sx={{ objectFit: "cover" }}
                       />
-                      <CardContent>
-                        <Typography variant="h6" fontWeight={700} color="white">
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" fontWeight={700} color="white" noWrap>
                           {movie.title}
                         </Typography>
                         <Typography variant="body2" color="gray">
@@ -151,16 +154,9 @@ export default function MultiSectionMovieGrid() {
         episodes={episodeArray}
         currentIdx={selectedIdx}
         onClose={() => setModalOpen(false)}
-        onNext={newIdx => setSelectedIdx(newIdx)}
-        onPrevious={newIdx => setSelectedIdx(newIdx)}
+        onNext={(newIdx) => setSelectedIdx(newIdx)}
+        onPrevious={(newIdx) => setSelectedIdx(newIdx)}
       />
     </div>
   );
 }
-
-// open,
-//   episodes,
-//   currentIdx,
-//   onClose,
-//   onNext,
-//   onPrevious,
