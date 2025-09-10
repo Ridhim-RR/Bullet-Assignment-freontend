@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -19,12 +19,25 @@ export default function EpisodePlayerModal({
   onNext,
   onPrevious,
 }) {
+  // Move hooks BEFORE any conditional returns
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current && episodes && episodes.length > 0) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [currentIdx, episodes]);
+
+  // Now do your conditional return safely
   if (!episodes || episodes.length === 0) return null;
 
   const { video, title, description } = episodes[currentIdx];
 
   return (
     <Modal open={open} onClose={onClose}>
+      {/* ... rest of your component ... */}
       <Box
         sx={{
           position: "fixed",
@@ -52,6 +65,7 @@ export default function EpisodePlayerModal({
           }}
         >
           <video
+            ref={videoRef}
             src={video}
             controls
             autoPlay
