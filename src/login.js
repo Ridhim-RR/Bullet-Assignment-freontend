@@ -57,12 +57,12 @@ function AuthForm() {
 
   const loginMutation = useMutation(loginApi, {
     onSuccess: (data) => {
-      if (data.token) navigate("/dashboard");
+      if (data.token) navigate("/list");
     },
   });
   const signupMutation = useMutation(signupApi, {
     onSuccess: (data) => {
-      if (data.token) navigate("/dashboard");
+      if (data.token) navigate("/list");
     },
   });
 
