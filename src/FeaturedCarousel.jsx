@@ -223,7 +223,7 @@ export default function FeaturedCarousel() {
   };
 
   return (
-    <Box sx={{ width: "100vw", minHeight: "64vh", background: "#121212" }}>
+    <Box sx={{ minHeight: "64vh", background: "#121212" }}>
       <Swiper
         modules={[Navigation, Pagination]}
         slidesPerView={1}
