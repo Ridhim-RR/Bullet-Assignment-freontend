@@ -13,11 +13,14 @@ import LockIcon from "@mui/icons-material/Lock";
 import { useNavigate } from "react-router-dom";
 
 const loginApi = async ({ email, password }) => {
-  const res = await fetch("https://bullet-assignment-backend-1.onrender.com/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  const res = await fetch(
+    "https://bullet-assignment-backend-1.onrender.com/api/auth/login",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    }
+  );
   if (!res.ok) throw new Error("Login failed");
   const data = await res.json();
   if (data.token) {
@@ -27,11 +30,14 @@ const loginApi = async ({ email, password }) => {
 };
 
 const signupApi = async ({ username, email, password }) => {
-  const res = await fetch("https://bullet-assignment-backend-1.onrender.com/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
-  });
+  const res = await fetch(
+    "https://bullet-assignment-backend-1.onrender.com/api/auth/register",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
+    }
+  );
   if (!res.ok) throw new Error("Signup failed");
   const data = await res.json();
   if (data.token) {
@@ -41,8 +47,12 @@ const signupApi = async ({ username, email, password }) => {
 };
 
 function AuthForm() {
-  const [type, setType] = useState("login");   // <-- Internal type state
-  const [fields, setFields] = useState({ username: "", email: "", password: "" });
+  const [type, setType] = useState("login"); // <-- Internal type state
+  const [fields, setFields] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
 
   const loginMutation = useMutation(loginApi, {
@@ -72,12 +82,21 @@ function AuthForm() {
   const handleSwitch = () => {
     setType(type === "login" ? "signup" : "login");
     setFields({ username: "", email: "", password: "" }); // Optionally reset fields
+    loginMutation.reset(); // Clear login errors
+    signupMutation.reset();
   };
 
   return (
-    <Paper elevation={6} sx={{ width: 380, mx: "auto", p: 4, mt: 10, bgcolor: "#23293A" }}>
+    <Paper
+      elevation={6}
+      sx={{ width: 380, mx: "auto", p: 4, mt: 10, bgcolor: "#23293A" }}
+    >
       <Stack alignItems="center" spacing={2}>
-        <LockIcon fontSize="large" color="primary" sx={{ bgcolor: "#23293A", color: "#FFD700" }} />
+        <LockIcon
+          fontSize="large"
+          color="primary"
+          sx={{ bgcolor: "#23293A", color: "#FFD700" }}
+        />
         <Typography variant="h5" fontWeight={600} color="white">
           {type === "login" ? "Login" : "Sign Up"}
         </Typography>
